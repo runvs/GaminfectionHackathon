@@ -18,14 +18,13 @@ import flixel.util.FlxTimer;
 class PlayState_Falling extends FlxState
 {
 	
-	public var backgroundSprite : FlxSprite;
+	public var background : FlxSpriteGroup;
+
 	public var overlay : FlxSprite;
 	private var ending : Bool;
 	
-	public var Score : Int = 0;
-	private var scoreText : FlxText;
 	
-	private var timer : Float;
+	private var RemainingHeight : Float;
 	private var timerText : FlxText;
 	
 	private var bacteria : Bacteria;
@@ -38,6 +37,11 @@ class PlayState_Falling extends FlxState
 	
 	private var spawnTimer :Float = 0;
 	
+	private var powerUps : FlxSpriteGroup;
+	private var powerupTimer : Float = 2;
+	
+	private var Score :Int  = 0;
+	
 	
 
 	/**
@@ -46,24 +50,48 @@ class PlayState_Falling extends FlxState
 	override public function create():Void
 	{
 		super.create();
-		backgroundSprite = new FlxSprite();
-		backgroundSprite.makeGraphic(FlxG.width, FlxG.height);
-		backgroundSprite.color = FlxColor.fromRGB(30, 30, 30);
-		add(backgroundSprite);
+		
+		background = new FlxSpriteGroup();
+		
+		var bg1 = new FlxSprite(0,0);
+		bg1.loadGraphic(AssetPaths.background__png, false, 200, 150);
+		bg1.origin.set();
+		bg1.scale.set(4, 4);
+		bg1.setPosition(0, 0 );
+		background.add(bg1);
+		
+		var bg2 = new FlxSprite(0,0);
+		bg2.loadGraphic(AssetPaths.background__png, false, 200, 150);
+		bg2.origin.set();
+		bg2.scale.set( -4, 4);
+		bg2.setPosition(800, 600);
+		background.add(bg2);
+		
+		
+		var bg3 = new FlxSprite(0,0);
+		bg3.loadGraphic(AssetPaths.background__png, false, 200, 150);
+		//bg3.origin.set();
+		bg3.scale.set(4, -4);
+		bg3.setPosition(-4000, -3000);
+		background.add(bg3);
+		
+		
 		
 		
 		// add stuff here
 		
 		flakesBG = new Flakes(FlxG.camera, 50, 30);
 		add(flakesBG);
-		bacteria = new Bacteria(400, 30);
-		add(bacteria);
+		
+		bacteria = new Bacteria(300, 0);
+		//add(bacteria);
 		
 		
 		hairs = new FlxTypedGroup<Hair>();
 		//hairs.add(new Hair(true));
 		//add(hairs);
 		
+		powerUps = new FlxSpriteGroup();
 		
 		
 		ending = false;
@@ -74,13 +102,11 @@ class PlayState_Falling extends FlxState
 		
 		add(overlay);
 		
-		timer = 250;
+		RemainingHeight = 250;
+		
 		timerText = new FlxText(10, 10, 0, "0", 16);
 		timerText.color = Palette.primary0();
 		add(timerText);
-		scoreText = new FlxText(10, 32, 0, "0", 16);
-		scoreText.color = Palette.primary0();
-		add(scoreText);
 	}
 	
 	
@@ -98,11 +124,13 @@ class PlayState_Falling extends FlxState
 	override public function draw() : Void
 	{
 		//super.draw();
-		backgroundSprite.draw();
+		background.draw();
 		flakesBG.draw();
 		hairs.draw();
+		powerUps.draw();
 		bacteria.draw();
 		overlay.draw();
+		timerText.draw();
 		
 	}
 	
@@ -113,12 +141,19 @@ class PlayState_Falling extends FlxState
 	{
 		super.update(elapsed);
 		MyInput.update();
-		scoreText.text = "Score: " + Std.string(Score);
-		
+	
 		cleanUp();
 		hairs.update(elapsed);
+		powerUps.update(elapsed);
 		spawnTimer -= elapsed;
+		powerupTimer -= elapsed;
 		spawn();
+		
+		
+		
+		
+		
+		
 		
 	
 		if (velocityY < 50)
@@ -143,63 +178,139 @@ class PlayState_Falling extends FlxState
 		{
 			h.velocity.y = velocityY;
 		}
+		for (p in powerUps)
+		{
+			p.velocity.y = velocityY;
+		}
 		
-		var dec: Int = Std.int((timer * 10) % 10);
+		for (b in background)
+		{
+			b.update(elapsed);
+			b.velocity.set(0, velocityY);
+			if (b.y < -600)
+			b.y += 1200;
+		}
+		
+		var dec: Int = Std.int((RemainingHeight * 10) % 10);
 		if (dec < 0) dec *= -1;
-		timerText.text = "Timer: " + Std.string(Std.int(timer) + "." + Std.string(dec));
-		
+		timerText.text = "Remaining Height: " + Std.string(Std.int(RemainingHeight) + "." + Std.string(dec));
+		timerText.text += "\nPowerUps: " + Score ;
+		bacteria.update(elapsed);
 		if (!ending)
 		{
 			
-			if (timer <= 0)
+			for (h in hairs)
 			{
-				EndGame();
+				if (h.touched) continue;
+				
+				if (FlxG.overlap(bacteria, h))
+				{
+					{
+						EndGame();
+					}
+				}
 			}
 			
+			for (p in powerUps)
+			{
+				if ( FlxG.overlap(bacteria, p))
+				{
+					p.alive = true;
+					Score++;
+				}
+			}
+			
+			
 			var speed : Float = 108; 
-			timer -= FlxG.elapsed;
+			RemainingHeight += (elapsed * velocityY) * 0.025;
+			
+			if (RemainingHeight <= 0)
+			{
+				RemainingHeight = 0;
+				EndGame(true);
+			}
 			
 		}
 	}	
+	
+	
 	
 	function spawn() 
 	{
 		if (spawnTimer <= 0)
 		{
-			spawnTimer = FlxG.random.float(2, 5);
+			spawnTimer = FlxG.random.float(2.5, 5);
 			var l : Bool = FlxG.random.bool();
 			hairs.add(new Hair(l));
-			if (l) trace ("left");
-			else  trace ("right");
+			//if (l) trace ("left");
+			//else  trace ("right");
+		}
+		if (powerupTimer <= 0)
+		{
+			powerupTimer = FlxG.random.float(4.5, 6);
+			spawnPowerUp();
 		}
 	}
 	
 	function cleanUp() 
 	{
-		var l : FlxTypedGroup<Hair> = new FlxTypedGroup<Hair>();
-		for ( s in hairs)
 		{
-			if (s.alive) l.add(s);
+			var l : FlxTypedGroup<Hair> = new FlxTypedGroup<Hair>();
+			for ( s in hairs)
+			{
+				if (s.y < - 200) s.alive = false;
+				if (s.alive) l.add(s);
+			}
+			hairs = l;
 		}
-		hairs = l;
+		{
+			var l : FlxSpriteGroup = new FlxSpriteGroup();
+			for ( s in powerUps)
+			{
+				if (s.y < - 200) s.alive = false;
+				if (s.alive) l.add(s);
+			}
+			powerUps = l;
+		}
+	}
+	
+	function spawnPowerUp()
+	{
+		var s : FlxSprite = new FlxSprite(FlxG.random.float(300,500), 900);
+		s.loadGraphic(AssetPaths.speed__png, true, 12, 12);
+		s.scale.set(4, 4);
+		s.animation.add("idle",  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 8);
+		s.animation.play("idle");
+		s.updateHitbox();
+		powerUps.add(s);
 	}
 	
 
 	
-	function EndGame() 
+	function EndGame(win : Bool = false ) 
 	{
+		bacteria.velocity.set();
+		bacteria.acceleration.set();
+		bacteria.reactToInput = false;
 		if (!ending)
 		{
 			ending = true;
+			if (win)
+			{
+				FlxTween.tween(overlay, { alpha : 1.0 }, 0.45);
+				var t: FlxTimer = new FlxTimer();
+				t.start(0.5,function(t:FlxTimer): Void { FlxG.switchState(new PlayState_Landing()); } );
+			}
+			else
+			{
+				FlxTween.tween(overlay, { alpha : 1.0 }, 0.95);
+				bacteria.maxVelocity.set(0, -3 * GP.BacteriaMoveMaxSpeed); 
+				bacteria.velocity.set(0, -1.5 * GP.BacteriaMoveMaxSpeed);
+				bacteria.color = FlxColor.GRAY;
+				var t: FlxTimer = new FlxTimer();
+				t.start(1.0,function(t:FlxTimer): Void { FlxG.switchState(new MenuState()); } );
+			}
 			
-			MenuState.setNewScore(Score);
-			
-			FlxTween.tween(overlay, {alpha : 1.0}, 0.9);
-			
-			var t: FlxTimer = new FlxTimer();
-			t.start(1,function(t:FlxTimer): Void { FlxG.switchState(new MenuState()); } );
 		}
-		
 	}
-	
 }

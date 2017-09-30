@@ -16,6 +16,7 @@ class Bacteria extends FlxSprite
 	
 	// encoded in phi, r;
 	private var age : Float = 0;
+	public var reactToInput : Bool = true;
 	
 
 	public function new(?X:Float=0, ?Y:Float=0) 
@@ -35,6 +36,7 @@ class Bacteria extends FlxSprite
 		this.drag.set(GP.BaceteriaMoveDrag, GP.BaceteriaMoveDrag);
 		this.maxVelocity.set(GP.BacteriaMoveMaxSpeed, GP.BacteriaMoveMaxSpeed);
 		this.updateHitbox();
+		velocity.set(0, 100);
 
 	}
 	
@@ -43,14 +45,17 @@ class Bacteria extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
-		age += elapsed;
 		
-		this.acceleration.set();
-		DoMovement();
-		AddrandomMovement(elapsed);
-		ClampPosition();
-		
-		
+		if (reactToInput)
+		{
+			age += elapsed;
+			
+			this.acceleration.set();
+			DoMovement();
+			AddrandomMovement(elapsed);
+			ClampPosition();
+			
+		}
 		this.facing = ((velocity.x < 0) ? FlxObject.LEFT : FlxObject.RIGHT );
 	}
 	

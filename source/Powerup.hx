@@ -31,7 +31,6 @@ class Powerup extends FlxSprite
 	{
 		super.update(elapsed);
 		underlay.setPosition(x+ 24, y+24);
-		
 	}
 	
 	override public function draw():Void 

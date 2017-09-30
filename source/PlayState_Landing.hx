@@ -33,7 +33,10 @@ class PlayState_Landing extends FlxState
 		add(backgroundSprite);
 		
 		var platform : FlxSprite = new FlxSprite(0, 500);
-		platform.makeGraphic(FlxG.width, 300, FlxColor.BLACK);
+		//platform.makeGraphic(FlxG.width, 300, FlxColor.BLACK);
+		platform.loadGraphic(AssetPaths.ground__png, false, 200, 25);
+		platform.origin.set(0, 0);
+		platform.scale.set(4, 4);
 		add(platform);
 		
 		

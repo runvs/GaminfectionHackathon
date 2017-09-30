@@ -33,12 +33,16 @@ class PlayStateJump extends FlxState
 		backgroundSprite.scale.set(4, 4);
 		add(backgroundSprite);
 		
-		var platform : FlxSprite = new FlxSprite(0, 300 + 24 *2 + 12);
-		platform.makeGraphic(300, 300, FlxColor.BLACK);
+		var platform : FlxSprite = new FlxSprite(0, FlxG.height - 4 * 44);
+		//platform.makeGraphic(300, 300, FlxColor.BLACK);
+		platform.loadGraphic(AssetPaths.cliff__png, false, 75, 44);
+		platform.origin.set();
+		platform.scale.set(4, 4);
+		
 		add(platform);
 		
 		
-		soldier = new FlxSprite(200, 300);
+		soldier = new FlxSprite(200, FlxG.height - 4 * 44 - 2*24 - 12);
 		soldier.loadGraphic(AssetPaths.Soldier__png, true, 24, 24);
 		soldier.scale.set(4, 4);
 		soldier.animation.add("run", [5, 6, 7, 8, 9], 12, true);

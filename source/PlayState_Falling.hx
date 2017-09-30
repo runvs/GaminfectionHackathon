@@ -170,10 +170,7 @@ class PlayState_Falling extends FlxState
 		}
 		
 		flakesBG._globalVelocityY = velocityY * 0.8;
-		for (h in hairs)
-		{
-			h.velocity.y = velocityY;
-		}
+	
 		for (p in powerUps)
 		{
 			p.velocity.y = velocityY;
@@ -195,8 +192,15 @@ class PlayState_Falling extends FlxState
 		if (!ending)
 		{
 			
+			if (FlxG.keys.justPressed.F9)
+			{
+				EndGame(true);
+			}
+			
 			for (h in hairs)
 			{
+				h.velocity.y = velocityY;
+				
 				if (h.touched) continue;
 				
 				if (FlxG.overlap(bacteria, h))

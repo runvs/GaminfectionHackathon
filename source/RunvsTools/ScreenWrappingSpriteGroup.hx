@@ -59,7 +59,7 @@ class ScreenWrappingSpriteGroup extends FlxSpriteGroup
 		if (pret.x < -s.width - _padding) s.x += _cam.width + s.width + _padding;
 		if (pret.x > FlxG.width + _padding) s.x -= _cam.width + s.width + _padding;
 		
-		if (pret.y < -s.height - _padding) s.y += _cam.height+ -_padding + s.height ;
+		if (pret.y < -s.height - _padding) s.y += _cam.height + _padding + s.height ;
 		if (pret.y > FlxG.height+ _padding) s.y -= _cam.height + _padding + s.height;
 	}
 	

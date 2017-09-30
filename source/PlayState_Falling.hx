@@ -3,6 +3,8 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
@@ -28,6 +30,15 @@ class PlayState_Falling extends FlxState
 	
 	private var bacteria : Bacteria;
 	
+	private var flakesBG : Flakes;
+	
+	private var hairs : FlxTypedGroup<Hair>;
+	
+	private var velocityY : Float = -10;
+	
+	private var spawnTimer :Float = 0;
+	
+	
 
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -37,15 +48,21 @@ class PlayState_Falling extends FlxState
 		super.create();
 		backgroundSprite = new FlxSprite();
 		backgroundSprite.makeGraphic(FlxG.width, FlxG.height);
-		backgroundSprite.color = Palette.primary3();
+		backgroundSprite.color = FlxColor.BLACK;
 		add(backgroundSprite);
 		
 		
 		// add stuff here
 		
+		flakesBG = new Flakes(FlxG.camera, 50, 30);
+		add(flakesBG);
 		bacteria = new Bacteria(400, 30);
 		add(bacteria);
 		
+		
+		hairs = new FlxTypedGroup<Hair>();
+		//hairs.add(new Hair(true));
+		//add(hairs);
 		
 		
 		
@@ -56,7 +73,7 @@ class PlayState_Falling extends FlxState
 		add(overlay);
 	
 		
-		timer = 25;
+		timer = 250;
 		timerText = new FlxText(10, 10, 0, "0", 16);
 		timerText.color = Palette.primary0();
 		add(timerText);
@@ -81,6 +98,8 @@ class PlayState_Falling extends FlxState
 	{
 		//super.draw();
 		backgroundSprite.draw();
+		flakesBG.draw();
+		hairs.draw();
 		bacteria.draw();
 		overlay.draw();
 		
@@ -94,6 +113,35 @@ class PlayState_Falling extends FlxState
 		super.update(elapsed);
 		MyInput.update();
 		scoreText.text = "Score: " + Std.string(Score);
+		
+		cleanUp();
+		hairs.update(elapsed);
+		spawnTimer -= elapsed;
+		spawn();
+		
+	
+		if (velocityY < 30)
+		{
+			velocityY += elapsed * (-20);
+		}
+		else if (velocityY < 70)
+		{
+			velocityY += elapsed * (-15);
+		}
+		else if (velocityY < GP.WorldMovementMax)
+		{
+			velocityY += elapsed * (-10);
+		}
+		else 
+		{
+			velocityY = WorldMovementMax;
+		}
+		
+		flakesBG._globalVelocityY = velocityY * 0.8;
+		for (h in hairs)
+		{
+			h.velocity.y = velocityY;
+		}
 		
 		var dec: Int = Std.int((timer * 10) % 10);
 		if (dec < 0) dec *= -1;
@@ -112,6 +160,28 @@ class PlayState_Falling extends FlxState
 			
 		}
 	}	
+	
+	function spawn() 
+	{
+		if (spawnTimer <= 0)
+		{
+			spawnTimer = FlxG.random.float(2, 5);
+			var l : Bool = FlxG.random.bool();
+			hairs.add(new Hair(l));
+			if (l) trace ("left");
+			else  trace ("right");
+		}
+	}
+	
+	function cleanUp() 
+	{
+		var l : FlxTypedGroup<Hair> = new FlxTypedGroup<Hair>();
+		for ( s in hairs)
+		{
+			if (s.alive) l.add(s);
+		}
+		hairs = l;
+	}
 	
 
 	

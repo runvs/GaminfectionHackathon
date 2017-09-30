@@ -23,6 +23,8 @@ class Bacteria extends FlxSprite
 		makeGraphic(24, 24, FlxColor.WHITE);
 		this.drag.set(GP.BaceteriaMoveDrag, GP.BaceteriaMoveDrag);
 		this.maxVelocity.set(GP.BacteriaMoveMaxSpeed, GP.BacteriaMoveMaxSpeed);
+		this.scale.set(2, 2);
+		this.updateHitbox();
 
 	}
 	

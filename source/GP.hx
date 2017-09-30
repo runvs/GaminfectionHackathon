@@ -15,6 +15,7 @@ class GP
 	
 	static public var BacteriaRandomMoveRotationSpeed (default, null) : Float = 1.17777777;
 	static public var BacteriaRandomMoveStrength (default, null) : Float = 65;
+	static public var WorldMovementMax (default, null) : Float = 100;
 	
 	
 }

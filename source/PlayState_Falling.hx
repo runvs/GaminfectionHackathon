@@ -284,8 +284,6 @@ class PlayState_Falling extends FlxState
 		powerUps.add(s);
 	}
 	
-
-	
 	function EndGame(win : Bool = false ) 
 	{
 		bacteria.velocity.set();

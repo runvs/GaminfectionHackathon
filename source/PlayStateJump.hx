@@ -86,7 +86,7 @@ class PlayStateJump extends FlxState
 		
 		
 		var tend : FlxTimer = new FlxTimer();
-		tend.start(6.5, function (t) 
+		tend.start(6.0, function (t) 
 		{
 			SwitchToNext();
 		} );

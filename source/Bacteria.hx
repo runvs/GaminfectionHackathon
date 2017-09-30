@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -20,10 +21,17 @@ class Bacteria extends FlxSprite
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		makeGraphic(24, 24, FlxColor.WHITE);
+		//makeGraphic(24, 24, FlxColor.WHITE);
+		this.loadGraphic(AssetPaths.Soldier__png, true, 24, 24);
+		this.animation.add("fall", [25, 26, 27, 28, 29, 30, 31, 32], 7);
+		this.animation.play("fall");
+		
+		this.setFacingFlip(FlxObject.LEFT, true, false);
+		this.setFacingFlip(FlxObject.RIGHT, false, false);
+		
+		this.scale.set(4, 4);
 		this.drag.set(GP.BaceteriaMoveDrag, GP.BaceteriaMoveDrag);
 		this.maxVelocity.set(GP.BacteriaMoveMaxSpeed, GP.BacteriaMoveMaxSpeed);
-		this.scale.set(2, 2);
 		this.updateHitbox();
 
 	}
@@ -38,13 +46,10 @@ class Bacteria extends FlxSprite
 		this.acceleration.set();
 		DoMovement();
 		AddrandomMovement(elapsed);
-		
-		
 		ClampPosition();
 		
 		
-		
-		
+		this.facing = ((velocity.x < 0) ? FlxObject.LEFT : FlxObject.RIGHT );
 	}
 	
 	function AddrandomMovement(elapsed : Float) 

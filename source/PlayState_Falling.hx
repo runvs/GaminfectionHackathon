@@ -134,7 +134,7 @@ class PlayState_Falling extends FlxState
 		}
 		else 
 		{
-			velocityY = WorldMovementMax;
+			velocityY = GP.WorldMovementMax;
 		}
 		
 		flakesBG._globalVelocityY = velocityY * 0.8;

@@ -31,7 +31,7 @@ class Flakes extends ScreenWrappingSpriteGroup
 		{
 			var s : FlxSprite = new FlxSprite( FlxG.random.float(-_padding, _cam.width + _padding), FlxG.random.float(_padding, _cam.height + _padding));
 			s.cameras = [_cam];
-			s.makeGraphic(3, 12, Palette.primary4());
+			s.makeGraphic(3, 12, Palette.primary2());
 			s.scrollFactor.set(1.1, 1.1);
 
 			add(s);

@@ -20,7 +20,7 @@ class Hair extends FlxSprite
 	{
 		super();
 		
-		this.makeGraphic(64, 16, FlxColor.RED);
+		this.makeGraphic(96, 16, FlxColor.RED);
 		this.scale.set(2, 2);
 		_left = Left;
 		this.velocity.set(0, -20);
@@ -30,13 +30,13 @@ class Hair extends FlxSprite
 		
 		if (_left)
 		{
-			this.setPosition( -96, FlxG.height + this.height * 2);
-			FlxTween.tween(this, { x: 0 }, 2, { type:FlxTween.PINGPONG, startDelay: FlxG.random.float(0,2) } );
+			this.setPosition( -128, FlxG.height + this.height * 2 + FlxG.random.float(0,300));
+			FlxTween.tween(this, { x: 0 }, 2, { type:FlxTween.PINGPONG, startDelay: FlxG.random.float(0,0.5) } );
 		}
 		else
 		{
-			this.setPosition( FlxG.width - this.width + 96, FlxG.height + this.height * 2);
-			FlxTween.tween(this, { x: FlxG.width - this.width  }, 2, { type:FlxTween.PINGPONG, startDelay: FlxG.random.float(0,2) } );
+			this.setPosition( FlxG.width - this.width + 128, FlxG.height + this.height * 2 + FlxG.random.float(0,300));
+			FlxTween.tween(this, { x: FlxG.width - this.width  }, 2, { type:FlxTween.PINGPONG, startDelay: FlxG.random.float(0,0.5) } );
 		}
 		
 	}

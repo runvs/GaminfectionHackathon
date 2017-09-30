@@ -62,7 +62,8 @@ class PlayStateJump extends FlxState
 		
 		overlay = new FlxSprite();
 		overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		overlay.alpha = 0;
+		overlay.alpha = 1;
+		FlxTween.tween(overlay, { alpha : 0 }, 0.25);
 		add(overlay);
 		
 		vignette = new Vignette(FlxG.camera, 0.35);

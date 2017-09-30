@@ -34,7 +34,7 @@ class PlayState_Falling extends FlxState
 	
 	private var hairs : FlxTypedGroup<Hair>;
 	
-	private var velocityY : Float = -10;
+	private var velocityY : Float = -30;
 	
 	private var spawnTimer :Float = 0;
 	
@@ -48,7 +48,7 @@ class PlayState_Falling extends FlxState
 		super.create();
 		backgroundSprite = new FlxSprite();
 		backgroundSprite.makeGraphic(FlxG.width, FlxG.height);
-		backgroundSprite.color = FlxColor.BLACK;
+		backgroundSprite.color = FlxColor.fromRGB(30, 30, 30);
 		add(backgroundSprite);
 		
 		
@@ -69,9 +69,10 @@ class PlayState_Falling extends FlxState
 		ending = false;
 		overlay = new FlxSprite();
 		overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		overlay.alpha = 0;
+		overlay.alpha = 1;
+		FlxTween.tween (overlay, { alpha : 0 }, 0.5);
+		
 		add(overlay);
-	
 		
 		timer = 250;
 		timerText = new FlxText(10, 10, 0, "0", 16);
@@ -120,7 +121,7 @@ class PlayState_Falling extends FlxState
 		spawn();
 		
 	
-		if (velocityY < 30)
+		if (velocityY < 50)
 		{
 			velocityY += elapsed * (-20);
 		}

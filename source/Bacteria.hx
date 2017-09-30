@@ -23,7 +23,9 @@ class Bacteria extends FlxSprite
 		super(X, Y);
 		//makeGraphic(24, 24, FlxColor.WHITE);
 		this.loadGraphic(AssetPaths.Soldier__png, true, 24, 24);
-		this.animation.add("fall", [25, 26, 27, 28, 29, 30, 31, 32], 7);
+		
+
+		this.animation.add("fall", [ 26, 27, 28, 29, 30, 31, 32,33], 8);
 		this.animation.play("fall");
 		
 		this.setFacingFlip(FlxObject.LEFT, true, false);

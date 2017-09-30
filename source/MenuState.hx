@@ -69,7 +69,7 @@ class MenuState extends FlxState
 		super.update(elapsed );
 		if (FlxG.keys.pressed.SPACE ||MyInput.AnyButtonPrressed)
 		{
-			FlxG.switchState(new PlayState_Falling());
+			FlxG.switchState(new PlayStateJump());
 		}
 	}	
 }

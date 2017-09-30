@@ -42,6 +42,8 @@ class PlayState_Falling extends FlxState
 	
 	private var Score :Int  = 0;
 	
+	private var vignette : Vignette;
+	
 	
 
 	/**
@@ -66,18 +68,7 @@ class PlayState_Falling extends FlxState
 		bg2.scale.set( -4, 4);
 		bg2.setPosition(800, 600);
 		background.add(bg2);
-		
-		
-		var bg3 = new FlxSprite(0,0);
-		bg3.loadGraphic(AssetPaths.background__png, false, 200, 150);
-		//bg3.origin.set();
-		bg3.scale.set(4, -4);
-		bg3.setPosition(-4000, -3000);
-		background.add(bg3);
-		
-		
-		
-		
+
 		// add stuff here
 		
 		flakesBG = new Flakes(FlxG.camera, 50, 30);
@@ -101,6 +92,9 @@ class PlayState_Falling extends FlxState
 		FlxTween.tween (overlay, { alpha : 0 }, 0.5);
 		
 		add(overlay);
+		
+		vignette = new Vignette(FlxG.camera, 0.35);
+		
 		
 		RemainingHeight = 250;
 		
@@ -127,9 +121,11 @@ class PlayState_Falling extends FlxState
 		background.draw();
 		flakesBG.draw();
 		hairs.draw();
-		powerUps.draw();
+		
 		bacteria.draw();
+		powerUps.draw();
 		overlay.draw();
+		vignette.draw();
 		timerText.draw();
 		
 	}
@@ -213,13 +209,17 @@ class PlayState_Falling extends FlxState
 			
 			for (p in powerUps)
 			{
-				if ( FlxG.overlap(bacteria, p))
+				if (p.alpha == 1)
 				{
-					p.alive = true;
-					Score++;
+					if ( FlxG.overlap(bacteria, p))
+					{
+						FlxG.camera.flash(FlxColor.fromRGB(254, 174, 52, 150), 0.5);
+						FlxTween.tween(p, { alpha : 0 }, 0.74);
+						FlxTween.tween(p.scale, { x: 8, y: 8 }, 0.75, { onComplete:function(t) { p.alive = false; }} );
+						Score++;
+					}
 				}
 			}
-			
 			
 			var speed : Float = 108; 
 			RemainingHeight += (elapsed * velocityY) * 0.025;
@@ -276,12 +276,7 @@ class PlayState_Falling extends FlxState
 	
 	function spawnPowerUp()
 	{
-		var s : FlxSprite = new FlxSprite(FlxG.random.float(300,500), 900);
-		s.loadGraphic(AssetPaths.speed__png, true, 12, 12);
-		s.scale.set(4, 4);
-		s.animation.add("idle",  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], 8);
-		s.animation.play("idle");
-		s.updateHitbox();
+		var s : Powerup = new Powerup(FlxG.random.float(300,500), 900);
 		powerUps.add(s);
 	}
 	

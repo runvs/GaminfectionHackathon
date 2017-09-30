@@ -20,6 +20,7 @@ class PlayStateJump extends FlxState
 	private var ending : Bool = false;
 	
 	private var arrow : FlxSprite;
+	private var vignette : Vignette;
 	
 	
 	override public function create() 
@@ -59,6 +60,9 @@ class PlayStateJump extends FlxState
 		overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		overlay.alpha = 0;
 		add(overlay);
+		
+		vignette = new Vignette(FlxG.camera, 0.35);
+		add(vignette);
 		
 		
 		var t1 : FlxTimer = new FlxTimer();

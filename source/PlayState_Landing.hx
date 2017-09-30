@@ -20,6 +20,8 @@ class PlayState_Landing extends FlxState
 	
 	private var ending : Bool = false;
 	
+	private var vignette : Vignette;
+	
 	override public function create() 
 	{
 		super.create();
@@ -53,6 +55,9 @@ class PlayState_Landing extends FlxState
 		overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		overlay.alpha = 0;
 		add(overlay);
+		
+		vignette = new Vignette(FlxG.camera, 0.35);
+		add(vignette);
 		
 		FlxTween.tween(soldier, { y: FlxG.height - 100 - 24 * 2 }, 2, { ease:FlxEase.cubeOut } );
 		

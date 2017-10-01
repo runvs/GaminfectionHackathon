@@ -59,7 +59,7 @@ class MenuState extends FlxState
 		title.y = 45;
 		title.alignment = "CENTER";
 		title.color = Palette.primary1();
-		var t1 : FlxText = new FlxText (100, 350, 600, "Press any button to start", 14);
+		var t1 : FlxText = new FlxText (100, 350, 600, "Press Space to start", 14);
 		t1.color = Palette.primary1();
 		var t2 : FlxText = new FlxText (20, 0, 600, "created by @Sturmvogl, @xXBloodyOrange and @Laguna_999 for Gaminfection Hackaton\n2017-09-30\nvisit us at https://runvs.io", 10);
 		t2.y = FlxG.height - t2.height - 20;
@@ -79,6 +79,10 @@ class MenuState extends FlxState
 		vignette = new Vignette(FlxG.camera, 0.35);
 		add(vignette);
 
+		if (FlxG.sound.music == null) // don't restart the music if it's already playing
+		{
+			FlxG.sound.playMusic(AssetPaths.hackaton_OST__ogg, 0.5, true);
+		}
 	}
 	
 	

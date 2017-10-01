@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
@@ -22,10 +23,19 @@ class PlayStateJump extends FlxState
 	private var arrow : FlxSprite;
 	private var vignette : Vignette;
 	
+	private var jumpsound : FlxSound;
+	private var hepSound : FlxSound;
+	
+	private var age : Float = 0;
+	
 	
 	override public function create() 
 	{
 		super.create();
+		
+		
+		jumpsound = FlxG.sound.load(AssetPaths.jump__ogg);
+		hepSound = FlxG.sound.load(AssetPaths.hep__ogg, 0.5);
 		
 		var backgroundSprite : FlxSprite = new FlxSprite(0, 0);
 		backgroundSprite.loadGraphic(AssetPaths.background__png, false, 200, 150);
@@ -71,16 +81,30 @@ class PlayStateJump extends FlxState
 		
 		
 		var t1 : FlxTimer = new FlxTimer();
-		t1.start(1.0, function(t) { soldier.animation.play("jump"); } );
+		t1.start(1.0, function(t) 
+		{ 
+			hepSound.play();
+			soldier.animation.play("jump"); 
+			
+		} );
+		
+		var tsound : FlxTimer = new FlxTimer();
+		tsound.start(2.35, function (t) 
+		{
+			jumpsound.play();
+		});
 		
 		var tacc : FlxTimer = new FlxTimer();
 		tacc.start(1.25, function(t) 
 		{ 
-			soldier.acceleration.set(0, 60); 
+			
+			soldier.acceleration.set(0, 90); 
 			soldier.velocity.set(soldier.velocity.x, -75); 
 			soldier.drag.set(10, 0); 
 			
 		} );
+		
+		
 		
 		var t2 : FlxTimer = new FlxTimer();
 		t2.start(10.0 / 8.0 + 4.0 / 8.0 + 1.0, function (t) { soldier.animation.play("fall", true); } );
@@ -91,6 +115,8 @@ class PlayStateJump extends FlxState
 		{
 			SwitchToNext();
 		} );
+		
+
 		
 	}
 	
@@ -109,11 +135,17 @@ class PlayStateJump extends FlxState
 	
 	override public function update(elapsed:Float):Void 
 	{
+		age += elapsed;
+		
+		MyInput.update();
 		super.update(elapsed);
 		
-		if (FlxG.keys.justPressed.ANY)
+		if (age > 0.25)
 		{
-			SwitchToNext();
+			if (FlxG.keys.justPressed.ANY || MyInput.AnyButtonPrressed)
+			{
+				SwitchToNext();
+			}
 		}
 	}
 	

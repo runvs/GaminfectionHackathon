@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
@@ -44,6 +45,9 @@ class PlayState_Falling extends FlxState
 	
 	private var vignette : Vignette;
 	
+	private var powerupSound : FlxSound;
+	
+	private var hudBar : HudBar;
 	
 
 	/**
@@ -101,6 +105,13 @@ class PlayState_Falling extends FlxState
 		timerText = new FlxText(10, 10, 0, "0", 16);
 		timerText.color = Palette.primary0();
 		add(timerText);
+		
+		hudBar = new HudBar(10, 64, 96, 32, false, FlxColor.fromRGB(254, 174, 52), "0 / 3");
+		hudBar.color = FlxColor.fromRGB(254, 174, 52);
+		hudBar._background.color = FlxColor.fromRGB(254, 174, 52);
+		add(hudBar);
+		
+		powerupSound = FlxG.sound.load(AssetPaths.pickup__ogg, 0.75);
 	}
 	
 	
@@ -127,6 +138,7 @@ class PlayState_Falling extends FlxState
 		overlay.draw();
 		vignette.draw();
 		timerText.draw();
+		hudBar.draw();
 		
 	}
 	
@@ -146,6 +158,11 @@ class PlayState_Falling extends FlxState
 		spawn();
 		
 		
+		var v : Float = Score / 3;
+		if (v > 1) v = 1;
+		if (v < 0 ) v = 0;
+		hudBar.health = v;
+		hudBar._text.text = Std.string(Score) + " / 3";
 		
 		
 		
@@ -171,10 +188,7 @@ class PlayState_Falling extends FlxState
 		
 		flakesBG._globalVelocityY = velocityY * 0.8;
 	
-		for (p in powerUps)
-		{
-			p.velocity.y = velocityY;
-		}
+	
 		
 		for (b in background)
 		{
@@ -196,27 +210,59 @@ class PlayState_Falling extends FlxState
 			{
 				EndGame(true);
 			}
+			if (FlxG.keys.justPressed.F10)
+			{
+				Score += 3;
+				EndGame(true);
+			}
+			
+			if (MyInput.InteractButtonJustPressed)
+			{
+				if (Score >= 1)
+				{
+					if (bacteria.invulnerableTimer <= 0)
+					{
+						Score--;
+						bacteria.invulnerableTimer = 2;
+					}
+				}
+			}
 			
 			for (h in hairs)
 			{
 				h.velocity.y = velocityY;
 				
+				if (!h.inScreen)
+				{
+					if (h.y < 600 + h.height)
+					{
+						h.inScreen = true;
+						//h.hairsound.play();
+					}
+				}
+				
 				if (h.touched) continue;
 				
-				if (FlxG.overlap(bacteria, h))
+				if (bacteria.invulnerableTimer <= 0)
 				{
+					if (FlxG.overlap(bacteria, h))
 					{
-						EndGame();
+						
+						{
+							EndGame();
+						}
 					}
 				}
 			}
-			
+
 			for (p in powerUps)
 			{
+				p.velocity.y = velocityY;
 				if (p.alpha == 1)
 				{
 					if ( FlxG.overlap(bacteria, p))
 					{
+						powerupSound.play(true);
 						FlxG.camera.flash(FlxColor.fromRGB(254, 174, 52, 150), 0.5);
 						FlxTween.tween(p, { alpha : 0 }, 0.74);
 						FlxTween.tween(p.scale, { x: 8, y: 8 }, 0.75, { onComplete:function(t) { p.alive = false; }} );
@@ -296,7 +342,7 @@ class PlayState_Falling extends FlxState
 			{
 				FlxTween.tween(overlay, { alpha : 1.0 }, 0.45);
 				var t: FlxTimer = new FlxTimer();
-				t.start(0.5,function(t:FlxTimer): Void { FlxG.switchState(new PlayState_Landing()); } );
+				t.start(0.5,function(t:FlxTimer): Void { FlxG.switchState(new PlayState_Landing(Score)); } );
 			}
 			else
 			{

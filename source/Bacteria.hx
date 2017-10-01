@@ -18,6 +18,8 @@ class Bacteria extends FlxSprite
 	private var age : Float = 0;
 	public var reactToInput : Bool = true;
 	
+	public var invulnerableTimer : Float = -1;
+	
 
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
@@ -45,6 +47,17 @@ class Bacteria extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		super.update(elapsed);
+		
+		invulnerableTimer -= elapsed;
+		
+		if (invulnerableTimer > 0)
+		{
+			color = FlxColor.BLUE;
+		}
+		else 
+		{
+			color = FlxColor.WHITE;
+		}
 		
 		if (reactToInput)
 		{
